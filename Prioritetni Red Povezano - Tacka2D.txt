@@ -1,0 +1,99 @@
+#include <iostream>
+using namespace std;
+
+struct Tacka2D 
+{
+	int x, y;
+
+	Tacka2D(int xx = 0, int yy = 0) :x(xx), y(yy) {}
+
+	void Ispis()
+	{
+		cout << "(" << x << ":" << y << ")";
+	}
+};
+
+typedef Tacka2D Tip;
+
+struct Cvor 
+{
+	Cvor* next;
+	Tip info;
+
+	Cvor(Tip info, Cvor* next)
+	{
+		this->next = next;
+		this->info = info;
+	}
+};
+struct PrioritetniRedPov
+{
+	Cvor* prvi = nullptr;
+
+	int Udaljenost(Tip tacka) // racunanje udaljenosti tacaka
+	{ 
+		return (int)sqrt(pow(10 - tacka.x, 2) + pow(-5 - tacka.y, 2)); // Formula za udaljenost, dobije se na ispitu
+	}
+
+	void Dodaj(Tip tacka) {
+
+		Cvor* n = new Cvor(tacka, nullptr);
+		Cvor* t = prvi;
+		Cvor* pt = nullptr;
+
+		while (t != nullptr) 
+		{
+			if (Udaljenost(t->info) > Udaljenost(tacka)) // poredi udaljenosti
+			{
+				break;
+			}
+			pt = t;
+			t = t->next;
+		}
+		if (pt == nullptr) // ako nova tacka ima manju udaljenost od prve tacke u redu, stavlja se nova tacka na pocetak reda
+			prvi = n;
+		else
+			pt->next = n; 
+
+		n->next = t;
+	}
+
+	void Ukloni() // Uklanja prvi elemnt, jer je na prvom mjestu reda, tacka koja ima najmanju udaljenost
+	{
+		Cvor* t = prvi;		
+		prvi = prvi->next;
+		delete t;
+	}
+
+	bool JelPrazan() 
+	{ 
+		return prvi == nullptr; 
+	}
+
+	void Ispis() 
+	{
+		Cvor* t = prvi;
+
+		while (t != nullptr) 
+		{
+			t->info.Ispis(); // ispise prvo tacku
+			cout << "| Udaljenost: " << Udaljenost(t->info) << endl; // pa onda udaljenost
+			t = t->next;
+		}
+		cout << endl;
+	}
+};
+
+int main() 
+{
+	PrioritetniRedPov r;
+	r.Dodaj(Tacka2D(5, 6));
+	r.Dodaj(Tacka2D(7, -6));
+	r.Dodaj(Tacka2D(8, 7));
+	r.Ispis();
+	r.Ukloni();
+	cout << "-----------------------\n";
+	r.Ispis();
+
+	return 0;
+}
